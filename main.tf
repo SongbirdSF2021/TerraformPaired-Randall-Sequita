@@ -29,11 +29,51 @@ resource "aws_subnet" "SR-Subnet" {
   }
 }
 #Create a Internet Gateway
-
 resource "aws_internet_gateway" "SR-igw" {
   vpc_id = aws_vpc.SR-VPC.id
 
   tags = {
     Name = "SR-igw"
+  }
+}
+#Create Route Tableresource "aws_route_table" "SR-RouteTable" {
+   vpc_id = aws_vpc.SR-VPC.id 
+   route {
+      cidr_block = "0.0.0.0/0"
+      gateway_id = aws_internet_gateway.SR-igw.id   
+   }  
+   tags = {
+       Name = "SR-RouteTable"
+   }
+}
+#Create Route Association
+resource "aws_route_table_association" "SR-RouteAssociationSubnet" {
+    subnet_id = aws_subnet.SR-Subnet.id
+    route_table_id = aws_route_table.SR-RouteTable.id
+}
+
+#Create Security Groups
+resource "aws_security_group" "allow_80" {
+    name = "allow_80"
+    description = "Allows TLS inbounb traffic"
+    vpc_id = aws_vpc.SR-VPC.id
+
+    ingress {
+        description      = "TLS from VPC"
+        from_port        = 80
+        to_port          = 80
+        protocol         = "tcp"
+        cidr_blocks      = [aws_vpc.SR-VPC.cidr_block]
+  }
+
+    egress {
+        from_port        = 0
+        to_port          = 0
+        protocol         = "-1"
+        cidr_blocks      = ["0.0.0.0/0"]
+    }
+
+  tags = {
+    Name = "allow_80"
   }
 }
