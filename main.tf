@@ -23,7 +23,8 @@ resource "aws_vpc" "SR-VPC" {
 resource "aws_subnet" "SR-Subnet" {
   vpc_id     = aws_vpc.SR-VPC.id
   cidr_block = "10.0.1.0/24"
-
+  map_public_ip_on_launch = true
+ 
   tags = {
     Name = "SR-Subnet"
   }
@@ -118,10 +119,11 @@ resource "aws_instance" "SR-EC2-Instance" {
   tags = {
     Name = "SR-EC2-Instance"
   }
-  
+  user_data = "${file("install.sh")}"
 }
 
 #Create output variable for EC2 IPv4 address
 output "SR-Subnet" {
     value = aws_subnet.SR-Subnet.cidr_block
 }
+
