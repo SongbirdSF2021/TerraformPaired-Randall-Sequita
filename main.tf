@@ -106,10 +106,17 @@ resource "aws_security_group" "allow_22" {
 
 #Create EC2 instance
 resource "aws_instance" "SR-EC2-Instance" {
-  ami           = data.aws_ami.ubuntu.id
-  instance_type = "t3.micro"
-
+  ami = "ami-0ed9277fb7eb570c9"
+  instance_type = "t2.micro"
+  # VPC
+  subnet_id = "${aws_subnet.SR-Subnet.id}"
+  # Security Group
+  vpc_security_group_ids = ["${aws_security_group.allow_22.id}"]
+  # the Public SSH key
+  key_name = "SB-EC2-Excercise"
+  
   tags = {
-    Name = "HelloWorld"
+    Name = "SR-EC2-Instance"
   }
+  
 }
