@@ -120,3 +120,8 @@ resource "aws_instance" "SR-EC2-Instance" {
   }
   
 }
+
+#Create output variable for EC2 IPv4 address
+output "SR-Subnet" {
+    value = aws_subnet.SR-Subnet.cidr_block
+}
